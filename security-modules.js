@@ -355,6 +355,62 @@ class PrivaXionSecurity {
         
         console.log("[Security] Engine Active and Armed.");
     }
+    // --- New Methods ---
+
+    /**
+     * Импортирует ключ из пользовательского файла.
+     * @param {File} file - Файл .key размером ровно 32 байта.
+     */
+    async importKeyFromFile(file) {
+        const arrayBuffer = await file.arrayBuffer();
+        const bytes = new Uint8Array(arrayBuffer);
+        if (bytes.length !== 32) {
+            alert("Ошибка: Вы выбрали не тот файл (ключ PrivaXion должен весить ровно 32 байта).");
+            return;
+        }
+        try {
+            this.ramKey = await window.crypto.subtle.importKey(
+                "raw",
+                bytes,
+                { name: "AES-GCM" },
+                false,
+                ["encrypt", "decrypt"]
+            );
+            this.rawKeyMaterial = bytes;
+            alert("Ключ успешно импортирован.");
+        } catch (e) {
+            console.error(e);
+            alert("Ошибка: Ключ поврежден или отозван сервером.");
+        }
+    }
+
+    /**
+     * Полный сброс всех security‑данных и лимитов.
+     */
+    async resetAllSecurityData() {
+        // Остановить таймеры
+        if (this.pingInterval) clearInterval(this.pingInterval);
+        if (this.shredderInterval) clearInterval(this.shredderInterval);
+        // Уничтожить ключ
+        this.destroyKey();
+        // Очистить localStorage (session, PIN, язык и пр.)
+        localStorage.clear();
+        // Закрыть и удалить IndexedDB
+        if (this.db) {
+            this.db.close();
+            this.db = null;
+        }
+        await new Promise((resolve, reject) => {
+            const delRequest = indexedDB.deleteDatabase("PrivaXionSecureDB");
+            delRequest.onsuccess = () => resolve();
+            delRequest.onerror = (e) => reject(e);
+            delRequest.onblocked = () => console.warn("[Security] DB deletion blocked.");
+        });
+        // Перезапустить движок
+        await this.startEngine();
+        alert("Все данные безопасности сброшены. Вы можете создать новый аккаунт.");
+    }
+
 }
 
 // Export for integration

@@ -116,4 +116,13 @@ document.addEventListener('DOMContentLoaded', () => {
         setLanguage(newLang);
         localStorage.setItem('privaxion_lang', newLang);
     });
+// Reset Security Button handler
+    const resetSecurityBtn = document.getElementById('reset-security-btn');
+    if (resetSecurityBtn) {
+        resetSecurityBtn.addEventListener('click', async () => {
+            if (confirm('Вы уверены, что хотите сбросить все данные безопасности и лимиты? Это действие необратимо.')) {
+                await window.privaXionSecurityCore.resetAllSecurityData();
+            }
+        });
+    }
 });

@@ -126,131 +126,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return { blocked: false, ip };
     }
 
-    // ==================================================================
-    // АНТИ-F12, F7, F6, СКАЧИВАНИЕ И ИНСПЕКТИРОВАНИЕ
-    // ==================================================================
-
-    let devtoolsOpenAttempts = 0;
-
-    // Блокировка F12, F7, F6 и других клавиш для открытия DevTools
-    document.addEventListener('keydown', async (e) => {
-        // F12 - основные DevTools
-        if (e.key === 'F12' || e.code === 'F12') {
-            e.preventDefault();
-            devtoolsOpenAttempts++;
-            showToast('❌ DevTools заблокированы! Попытка ' + devtoolsOpenAttempts, 'error');
-            if (devtoolsOpenAttempts > 3) {
-                const ip = await getIPAddress();
-                addBlockedIP(ip, 'Многократные попытки открыть DevTools');
-                logout();
-            }
-            return false;
-        }
-
-        // F7 - отладка потока выполнения
-        if (e.key === 'F7' || e.code === 'F7') {
-            e.preventDefault();
-            devtoolsOpenAttempts++;
-            showToast('❌ Отладка заблокирована (F7)! Попытка ' + devtoolsOpenAttempts, 'error');
-            if (devtoolsOpenAttempts > 3) {
-                const ip = await getIPAddress();
-                addBlockedIP(ip, 'Попытки открыть отладку (F7)');
-                logout();
-            }
-            return false;
-        }
-
-        // F6 - адресная строка/поиск
-        if (e.key === 'F6' || e.code === 'F6') {
-            e.preventDefault();
-            devtoolsOpenAttempts++;
-            showToast('❌ Функция F6 заблокирована! Попытка ' + devtoolsOpenAttempts, 'error');
-            if (devtoolsOpenAttempts > 3) {
-                const ip = await getIPAddress();
-                addBlockedIP(ip, 'Попытки использовать F6');
-                logout();
-            }
-            return false;
-        }
-
-        // Ctrl+Shift+I - альтернатива F12 (Windows/Linux)
-        if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'I') {
-            e.preventDefault();
-            devtoolsOpenAttempts++;
-            showToast('❌ DevTools заблокированы (Ctrl+Shift+I)! Попытка ' + devtoolsOpenAttempts, 'error');
-            if (devtoolsOpenAttempts > 3) {
-                const ip = await getIPAddress();
-                addBlockedIP(ip, 'Попытки открыть DevTools (Ctrl+Shift+I)');
-                logout();
-            }
-            return false;
-        }
-
-        // Ctrl+Shift+J - консоль
-        if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'J') {
-            e.preventDefault();
-            devtoolsOpenAttempts++;
-            showToast('❌ Консоль заблокирована! Попытка ' + devtoolsOpenAttempts, 'error');
-            if (devtoolsOpenAttempts > 3) {
-                const ip = await getIPAddress();
-                addBlockedIP(ip, 'Попытки открыть консоль');
-                logout();
-            }
-            return false;
-        }
-
-        // Cmd+Option+I - DevTools на Mac
-        if (e.metaKey && e.altKey && e.key === 'I') {
-            e.preventDefault();
-            devtoolsOpenAttempts++;
-            showToast('❌ DevTools заблокированы (Cmd+Option+I)! Попытка ' + devtoolsOpenAttempts, 'error');
-            if (devtoolsOpenAttempts > 3) {
-                const ip = await getIPAddress();
-                addBlockedIP(ip, 'Попытки открыть DevTools (Mac)');
-                logout();
-            }
-            return false;
-        }
-    });
-
-    // Блокировка правого клика (но не полностью, только в критичных местах)
-    document.addEventListener('contextmenu', (e) => {
-        // Позволяем контекстное меню только для сообщений (реакции)
-        if (!e.target.closest('.message') && !e.target.closest('.msg-bubble')) {
-            e.preventDefault();
-            showToast('❌ Инспектирование заблокировано!', 'error');
-        }
-    });
-
-    // Блокировка Ctrl+S (сохранение)
-    document.addEventListener('keydown', (e) => {
-        if ((e.ctrlKey || e.metaKey) && e.key === 's') {
-            e.preventDefault();
-            showToast('❌ Сохранение страницы запрещено!', 'error');
-            return false;
-        }
-    });
-
-    // Блокировка переноса/копирования критичного контента (опционально)
-    // document.addEventListener('copy', (e) => {
-    //     const selected = window.getSelection().toString();
-    //     if (selected.length > 100) {
-    //         e.preventDefault();
-    //         showToast('⚠️ Массовое копирование запрещено!', 'error');
-    //     }
-    // });
-
-    // Проверка DevTools открыта ли по величине окна
-    setInterval(() => {
-        if (window.innerWidth > 768 && (window.outerHeight - window.innerHeight > 200 || window.outerWidth - window.innerWidth > 200)) {
-            devtoolsOpenAttempts++;
-            if (devtoolsOpenAttempts > 5) {
-                console.clear();
-                showToast('❌ DevTools обнаружены! Сеанс будет завершен...', 'error');
-                setTimeout(() => logout(), 2000);
-            }
-        }
-    }, 1000);
+    // Anti-DevTools block removed
 
     // ==================================================================
     // ТРОЙНОЕ ШИФРОВАНИЕ С ФЕЙКОВЫМИ КЛЮЧАМИ
@@ -3217,6 +3093,9 @@ function saveUser(user) {
         }
         empty.style.display = 'none';
 
+        const allUsersList = await getUsers();
+        const allRoomsList = typeof getRoomsSync === 'function' ? getRoomsSync() : [];
+
         users.forEach(uname => {
             const item = document.createElement('div');
             item.className = 'chat-list-item';
@@ -3226,7 +3105,21 @@ function saveUser(user) {
             const count = unreadCounts[uname] || 0;
             const badgeHtml = count > 0 ? `<div class="chat-list-badge">${count}</div>` : '';
 
+            let avatarHtml = `<div class="chat-list-avatar">${escapeHtml(uname.charAt(0).toUpperCase())}</div>`;
+            const foundUser = allUsersList.find(u => u.username.toLowerCase() === uname.toLowerCase());
+            
+            if (foundUser && foundUser.avatar) {
+                avatarHtml = `<img src="${foundUser.avatar}" class="chat-list-avatar">`;
+            } else {
+                const foundRoom = allRoomsList.find(r => r.id === uname);
+                if (foundRoom) {
+                    if (foundRoom.logo) avatarHtml = `<img src="${foundRoom.logo}" class="chat-list-avatar">`;
+                    else avatarHtml = `<div class="chat-list-avatar" style="background:var(--primary);color:#000;">${foundRoom.type === 'channel' ? '📢' : '👥'}</div>`;
+                }
+            }
+
             item.innerHTML = `
+                ${avatarHtml}
                 <span class="chat-list-name">${escapeHtml(uname)}</span>
                 <div class="chat-list-badge-container">${badgeHtml}</div>
             `;

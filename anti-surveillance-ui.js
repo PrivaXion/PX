@@ -25,8 +25,7 @@ class AntiSurveillanceUI {
             }
         });
 
-        // Отключение контекстного меню для усложнения копирования
-        document.addEventListener('contextmenu', e => e.preventDefault());
+        // Отключение контекстного меню убрано
     }
 
     triggerScreenshotAlert() {
