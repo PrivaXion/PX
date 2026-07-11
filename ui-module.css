@@ -1,0 +1,352 @@
+:root {
+    --bg-color: #f5f7fb;
+    --surface: #ffffff;
+    --primary: #3b82f6;
+    --primary-dark: #2563eb;
+    --text-main: #0f172a;
+    --text-muted: #64748b;
+    --border: #e2e8f0;
+    --bubble-in: #ffffff;
+    --bubble-out: #3b82f6;
+    --text-out: #ffffff;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100dvh; /* Strict no scroll for mobile */
+    overflow: hidden; 
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-main);
+}
+
+#app-container {
+    display: flex;
+    flex-direction: column;
+    height: 100dvh;
+    width: 100%;
+    position: relative;
+    background: var(--bg-color);
+}
+
+/* PC Optimization: Center the app if the screen is large */
+@media (min-width: 768px) {
+    #app-container {
+        max-width: 800px;
+        margin: 0 auto;
+        border-left: 1px solid var(--border);
+        border-right: 1px solid var(--border);
+        box-shadow: 0 0 30px rgba(0,0,0,0.05);
+    }
+}
+
+/* Header */
+header {
+    height: 60px;
+    background: var(--surface);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 16px;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+    z-index: 10;
+}
+
+.logo {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--primary);
+}
+
+.icon-btn {
+    background: none;
+    border: none;
+    font-size: 22px;
+    cursor: pointer;
+    color: var(--text-muted);
+    padding: 8px;
+    border-radius: 50%;
+    transition: background 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.icon-btn:hover {
+    background: var(--bg-color);
+}
+
+/* Chat Area */
+.chat-area {
+    flex-grow: 1;
+    overflow-y: auto; /* Internal scroll only */
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* Hide scrollbar for cleaner mobile look */
+.chat-area::-webkit-scrollbar {
+    width: 6px;
+}
+.chat-area::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 6px;
+}
+
+.message {
+    display: flex;
+    flex-direction: column;
+    max-width: 85%;
+}
+
+.message.incoming {
+    align-self: flex-start;
+}
+
+.message.outgoing {
+    align-self: flex-end;
+    align-items: flex-end;
+}
+
+.bubble {
+    padding: 12px 16px;
+    border-radius: 18px;
+    font-size: 15px;
+    line-height: 1.4;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+.message.incoming .bubble {
+    background: var(--bubble-in);
+    border-bottom-left-radius: 4px;
+}
+
+.message.outgoing .bubble {
+    background: var(--bubble-out);
+    color: var(--text-out);
+    border-bottom-right-radius: 4px;
+}
+
+.time {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 6px;
+    margin-bottom: 4px;
+}
+
+/* Footer */
+footer {
+    padding: 12px 16px;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    flex-shrink: 0;
+    padding-bottom: calc(12px + env(safe-area-inset-bottom));
+}
+
+.input-container {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+#message-input {
+    flex-grow: 1;
+    padding: 12px 16px;
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    font-size: 15px;
+    outline: none;
+    transition: border-color 0.2s;
+    background: var(--bg-color);
+}
+
+#message-input:focus {
+    border-color: var(--primary);
+    background: var(--surface);
+}
+
+.send-btn {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 24px;
+    font-weight: 500;
+    font-size: 15px;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+}
+
+.send-btn:hover {
+    background: var(--primary-dark);
+}
+.send-btn:active {
+    transform: scale(0.95);
+}
+
+/* Splash Screen & Animations */
+#splash-screen {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: var(--surface);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.5s ease-out;
+}
+
+#splash-screen.fade-out {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.shield-container {
+    position: relative;
+    width: 100px;
+    height: 120px;
+}
+
+.shield-icon {
+    width: 100px;
+    height: 120px;
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    clip-path: polygon(50% 0%, 100% 15%, 100% 70%, 50% 100%, 0% 70%, 0% 15%);
+    animation: shieldEntranceAndHit 2s ease-out forwards;
+    position: relative;
+    z-index: 2;
+    box-shadow: inset 0 0 20px rgba(255,255,255,0.3);
+}
+
+@keyframes shieldEntranceAndHit {
+    0% { transform: scale(0); opacity: 0; filter: brightness(1); }
+    15% { transform: scale(1.05); opacity: 1; filter: brightness(1); }
+    20% { transform: scale(1); filter: brightness(1); } 
+    45% { transform: scale(1); filter: brightness(1); } 
+    47% { transform: scale(1.15); filter: brightness(2); } /* Impact */
+    52% { transform: scale(0.95); filter: brightness(1.3); } /* Recoil */
+    60% { transform: scale(1); filter: brightness(1); } 
+    100% { transform: scale(1); opacity: 1; }
+}
+
+.particle {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background: #93c5fd; 
+    clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+    top: 50%;
+    left: 50%;
+    opacity: 0;
+    z-index: 1;
+}
+
+/* 8 particles triggered at 47% of 2s = 0.94s */
+.p1 { animation: fly 0.6s 0.94s cubic-bezier(0.25, 1, 0.5, 1) forwards; --tx: -70px; --ty: -90px; --r: 45deg; }
+.p2 { animation: fly 0.6s 0.94s cubic-bezier(0.25, 1, 0.5, 1) forwards; --tx: 70px; --ty: -80px; --r: -30deg; }
+.p3 { animation: fly 0.5s 0.94s cubic-bezier(0.25, 1, 0.5, 1) forwards; --tx: -90px; --ty: 10px; --r: 90deg; }
+.p4 { animation: fly 0.7s 0.94s cubic-bezier(0.25, 1, 0.5, 1) forwards; --tx: 90px; --ty: 30px; --r: -60deg; }
+.p5 { animation: fly 0.6s 0.94s cubic-bezier(0.25, 1, 0.5, 1) forwards; --tx: -60px; --ty: 80px; --r: 120deg; }
+.p6 { animation: fly 0.5s 0.94s cubic-bezier(0.25, 1, 0.5, 1) forwards; --tx: 60px; --ty: 90px; --r: -110deg; }
+.p7 { animation: fly 0.6s 0.94s cubic-bezier(0.25, 1, 0.5, 1) forwards; --tx: 10px; --ty: -110px; --r: 15deg; }
+.p8 { animation: fly 0.7s 0.94s cubic-bezier(0.25, 1, 0.5, 1) forwards; --tx: -30px; --ty: 100px; --r: 170deg; }
+
+@keyframes fly {
+    0% { transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity: 1; }
+    100% { transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(0) rotate(var(--r)); opacity: 0; }
+}
+
+/* Settings Modal */
+.modal-overlay {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(15, 23, 42, 0.4);
+    backdrop-filter: blur(2px);
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 1;
+    transition: opacity 0.2s ease-out;
+}
+
+.modal-overlay.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.modal-content {
+    background: var(--surface);
+    border-radius: 16px;
+    width: 90%;
+    max-width: 320px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    transform: translateY(0);
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.modal-overlay.hidden .modal-content {
+    transform: translateY(20px);
+}
+
+.modal-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-header h2 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: var(--text-muted);
+    line-height: 1;
+}
+
+.modal-body {
+    padding: 20px;
+}
+
+.setting-item {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.setting-item label {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-muted);
+}
+
+.setting-item select {
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    font-size: 15px;
+    outline: none;
+    background: var(--bg-color);
+    color: var(--text-main);
+    cursor: pointer;
+}
+
+.setting-item select:focus {
+    border-color: var(--primary);
+}

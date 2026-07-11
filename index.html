@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, minimum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>PrivaXion - GLOBAL</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- ВОДЯНОЙ ЗНАК -->
+    <div id="main-watermark" style="position: fixed; bottom: 10px; left: 0; width: 100%; text-align: center; z-index: 999999; opacity: 0.35; color: var(--text-muted); font-size: 11px; pointer-events: none; font-weight: 500; letter-spacing: 1.5px; text-transform: uppercase;">
+        by WT STUDIO powered by MinBelPower
+    </div>
+
+    <!-- ========== ПРИВЕТСТВЕННЫЙ ЭКРАН ========== -->
+    <div id="welcome-screen">
+        <div class="welcome-content">
+            <div class="logo-container animate-logo">
+                <img src="logo.png" class="shield-logo" alt="PrivaXion Logo" width="160" height="160">
+            </div>
+            <h1 class="welcome-title">PrivaXion</h1>
+            <p class="welcome-subtitle">GLOBAL</p>
+            <button id="btn-start" class="btn-start">Начать</button>
+        </div>
+    </div>
+
+    <!-- ========== АВТОРИЗАЦИЯ ========== -->
+    <div id="auth-container" class="hidden">
+        <header class="auth-header">
+            <div class="logo-icon-container">
+                <img src="logo.png" class="shield-logo-mini" alt="Logo" width="50" height="50">
+            </div>
+            <h1 class="brand-title">PrivaXion <span class="badge">GLOBAL</span></h1>
+            <p class="brand-subtitle">Самый безопасный мессенджер в истории</p>
+        </header>
+
+        <!-- ВХОД -->
+        <div id="login-card" class="auth-card">
+            <h2>🔐 Вход в аккаунт</h2>
+            <p style="font-size:13px;color:var(--text-muted);margin-bottom:16px;text-align:center;">
+                Для входа прикрепите ваш файл-ключ<br>
+                <code style="font-size:11px;opacity:0.6;">privaxion_key_&lt;username&gt;.json</code>
+            </p>
+            <form id="login-form" autocomplete="off">
+                <div class="input-group">
+                    <label for="login-keyfile">📎 Файл-ключ (.json)</label>
+                    <label for="login-keyfile-input" class="btn-primary" style="display:flex;align-items:center;justify-content:center;gap:10px;cursor:pointer;padding:14px;">
+                        <span id="login-file-label">Выбрать файл-ключ...</span>
+                    </label>
+                    <input type="file" id="login-keyfile-input" accept=".json" style="display:none;">
+                </div>
+                <div class="captcha-wrapper">
+                    <label>Проверка на робота</label>
+                    <div class="captcha-control">
+                        <canvas id="login-captcha-canvas" width="160" height="50"></canvas>
+                        <button type="button" id="login-refresh-captcha" class="btn-refresh" title="Обновить">&#x21bb;</button>
+                    </div>
+                    <input type="text" id="login-captcha-input" placeholder="Введите текст с картинки" required>
+                </div>
+                <div id="login-error" class="error-message"></div>
+                <button type="submit" class="btn-primary" style="margin-top:8px;">Войти</button>
+            </form>
+            <div class="auth-switch">
+                <span>Нет аккаунта?</span>
+                <button type="button" id="go-to-register" class="btn-link">Зарегистрироваться!</button>
+            </div>
+        </div>
+
+        <!-- РЕГИСТРАЦИЯ -->
+        <div id="register-card" class="auth-card hidden">
+            <h2>Регистрация</h2>
+            <form id="register-form" autocomplete="off">
+                <div class="input-group">
+                    <label for="register-username">Никнейм</label>
+                    <input type="text" id="register-username" placeholder="Создайте никнейм" required>
+                </div>
+                <div class="input-group">
+                    <label for="register-password">Пароль</label>
+                    <input type="password" id="register-password" placeholder="Придумайте пароль (от 8 символов)" required>
+                    <span class="input-hint">Минимум 8 символов</span>
+                </div>
+                <div class="input-group">
+                    <label for="register-confirm-password">Повторите пароль</label>
+                    <input type="password" id="register-confirm-password" placeholder="Повторите пароль" required>
+                </div>
+
+                <div class="input-group">
+                    <label for="register-birthdate">Дата рождения</label>
+                    <input type="date" id="register-birthdate" required>
+                </div>
+                <div class="captcha-wrapper">
+                    <label>Проверка на робота</label>
+                    <div class="captcha-control">
+                        <canvas id="register-captcha-canvas" width="160" height="50"></canvas>
+                        <button type="button" id="register-refresh-captcha" class="btn-refresh" title="Обновить">&#x21bb;</button>
+                    </div>
+                    <input type="text" id="register-captcha-input" placeholder="Введите текст с картинки" required>
+                </div>
+                <div id="register-error" class="error-message"></div>
+                <!-- ПОЛЬЗОВАТЕЛЬСКОЕ СОГЛАШЕНИЕ -->
+                <div class="profile-card" style="margin-bottom:12px;padding:12px;font-size:12px;">
+                    <details>
+                        <summary style="cursor:pointer;font-weight:600;margin-bottom:8px;">📄 Пользовательское соглашение (обязательно прочитать)</summary>
+                        <ol style="margin:10px 0 0 16px;line-height:1.8;color:var(--text-muted);">
+                            <li>Запрещён <strong>свaттинг</strong> — ложные вызовы экстренных служб (полиции, скорой, пожарной).</li>
+                            <li>Запрещён <strong>доксинг</strong> — публикация личных данных других людей без их согласия.</li>
+                            <li>Запрещено <strong>мошенничество (скам)</strong> — обман пользователей с целью наживы.</li>
+                            <li>Запрещено распространение <strong>спама</strong> — нежелательных рекламных и навязчивых сообщений.</li>
+                            <li>Запрещено распространение <strong>вредоносного ПО</strong> — вирусов, троянов, шпионских программ.</li>
+                            <li>Запрещено <strong>разжигание ненависти</strong> — дискриминация по расе, полу, религии, национальности.</li>
+                            <li>Запрещены <strong>продажа и пропаганда</strong> наркотиков и других запрещённых веществ.</li>
+                            <li>Запрещено <strong>создание и распространение CSAM</strong> — любого контента сексуального характера с несовершеннолетними.</li>
+                            <li><strong>Мессенджер PrivaXion не несёт ответственности</strong> за действия своих пользователей. Нарушители будут переданы в правоохранительные органы.</li>
+                            <li>Нарушение любого из вышеперечисленных пунктов влечёт за собой <strong>немедленную и бессрочную блокировку аккаунта</strong>.</li>
+                        </ol>
+                    </details>
+                    <div style="display:flex;align-items:center;gap:10px;margin-top:12px;">
+                        <input type="checkbox" id="terms-accept" style="width:18px;height:18px;accent-color:var(--primary);cursor:pointer;">
+                        <label for="terms-accept" style="cursor:pointer;">Я прочитал(а) и принимаю условия пользовательского соглашения</label>
+                    </div>
+                </div>
+                <button type="submit" class="btn-primary" id="btn-register-submit">Создать аккаунт</button>
+            </form>
+            <div class="auth-switch">
+                <span>Есть аккаунт?</span>
+                <button type="button" id="go-to-login" class="btn-link">Войти!</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== ГЛАВНЫЙ ЭКРАН (дизайн по макетам XXD / XDDD) ========== -->
+    <div id="home-screen" class="hidden">
+
+        <!-- Скрытые элементы для логики приложения -->
+        <span id="home-username-display" class="hidden" aria-hidden="true"></span>
+        <span id="home-status-display" class="hidden" aria-hidden="true"></span>
+        <div id="home-user-avatar" class="hidden" aria-hidden="true"></div>
+        <span id="news-badge" class="hidden" aria-hidden="true">0</span>
+        <h2 id="main-header-title" class="hidden" aria-hidden="true">PrivaXion</h2>
+
+        <!-- САЙДБАР -->
+        <aside class="sidebar">
+            <div class="sidebar-header-mockup">
+                <h2 class="sidebar-chats-title">ЧАТЫ</h2>
+                <div class="sidebar-divider"></div>
+            </div>
+
+            <div class="chat-list-section">
+                <div id="chat-list" class="chat-list">
+                    <div class="chat-list-empty" id="chat-list-empty">Пока нет чатов</div>
+                </div>
+            </div>
+
+            <div class="sidebar-bottom">
+                <div class="sidebar-divider"></div>
+                <div class="sidebar-nav-row">
+                    <button type="button" class="nav-pill active" id="nav-home">Главная</button>
+                    <button type="button" class="nav-pill" id="nav-friends">друзья</button>
+                </div>
+                <button type="button" class="nav-pill nav-pill-wide" id="nav-profile">профиль</button>
+            </div>
+        </aside>
+
+        <!-- ОСНОВНОЙ КОНТЕНТ -->
+        <main class="main-content">
+            <div class="main-panel">
+                <div class="panel-top-actions">
+                    <button type="button" class="panel-action-btn" id="btn-help">Помощь</button>
+                    <button type="button" class="panel-action-btn" id="btn-search-top">Поиск</button>
+                </div>
+
+                <div class="panel-body">
+            <!-- ЭКРАН: ЧАТ (окно переписки) -->
+            <div class="workspace-area hidden" id="screen-chat">
+            <div class="chat-header-bar" id="chat-header-bar">
+                    <button class="btn-mobile-back" onclick="document.body.classList.remove('mobile-main-active')">⬅️</button>
+                <div class="header-chat-info">
+                    <div class="header-chat-name" id="chat-room-name">...</div>
+                    <div class="header-chat-status status-offline" id="chat-room-counter-wrap">
+                        <!-- Счетчик (сколько сейчас)/(макс) будет проставляться JS -->
+                        <span id="chat-room-counter" style="margin-left:0;">0/0</span>
+                    </div>
+                </div>
+            </div>
+            <div class="chat-interface-photo">
+                <img src="XXD.jpg" alt="XXD" class="chat-interface-photo-img">
+            </div>
+                <div class="chat-window">
+                    <div class="chat-messages" id="chat-messages">
+                        <!-- Сообщения -->
+                    </div>
+
+                    <!-- Реплай/Ответ на сообщение -->
+                    <div class="reply-input-box hidden" id="reply-box">
+                        <div class="reply-text">
+                            <span class="message-reply-name" id="reply-name"></span>
+                            <span class="message-reply-text" id="reply-text"></span>
+                        </div>
+                        <button class="btn-reply-cancel" id="btn-cancel-reply">✕</button>
+                    </div>
+                    <div class="chat-input-area">
+                        <input type="text" id="chat-message-input" class="chat-input" placeholder="Напишите сообщение...">
+                        <button id="chat-send-btn" class="btn-send">➤</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ЭКРАН: ЗВОНОК (fullscreen UI) -->
+            <div class="workspace-area hidden" id="screen-call">
+                <div class="call-screen">
+                    <div class="call-top">
+                        <div class="call-title-row">
+                            <div class="call-title">Звонок</div>
+                            <div class="call-peer" id="call-peer-label">...</div>
+                        </div>
+                        <div class="call-status" id="call-status-text">ожидание…</div>
+                    </div>
+
+                    <div class="call-middle">
+                        <div class="call-avatar" id="call-avatar">👤</div>
+                        <div class="call-small" id="call-small-text">Mic & audio</div>
+                    </div>
+
+                    <div class="call-bottom">
+                        <div class="call-controls">
+                            <button id="btn-hangup-call" class="btn-primary call-btn call-btn-hangup">⛔ Отбой</button>
+                            <button id="btn-mic-off-call" class="btn-primary call-btn call-btn-mic">🎙️ Микрофон ВКЛ</button>
+                        </div>
+                        <div class="call-hint">
+                            Если не слышно — проверь разрешение микрофона в браузере.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ЭКРАН: ГЛАВНАЯ (нет активного чата) -->
+            <div class="workspace-area" id="screen-welcome">
+                <div class="home-logo-wrapper">
+                    <img src="logo.png" class="shield-logo-home" alt="PrivaXion" width="140" height="140">
+                    <span class="home-chat-label">Чат</span>
+                </div>
+            </div>
+
+            <!-- ЭКРАН: ПОМОЩЬ -->
+            <div class="workspace-area hidden" id="screen-help">
+                <div class="help-page">
+                    <h2 class="help-title">Помощь</h2>
+                    <div class="help-card">
+                        <p>PrivaXion — самый безопасный мессенджер. Все сообщения защищены тройным шифрованием (E2EE).</p>
+                        <ul class="help-list">
+                            <li><strong>Поиск</strong> — найдите друга по ID и начните переписку</li>
+                            <li><strong>друзья</strong> — поиск пользователей в боковом меню</li>
+                            <li><strong>профиль</strong> — ваш никнейм, ID и настройки аккаунта</li>
+                        </ul>
+                        <div class="help-actions">
+                            <button type="button" class="help-link-btn" id="help-open-news">Новости</button>
+                            <button type="button" class="help-link-btn" id="help-open-settings">Настройки безопасности</button>
+                            <button type="button" class="help-link-btn hidden" id="help-open-admin" style="color:#ff3b5c; border-color: rgba(255, 59, 92, 0.3);">⚙️ Панель администратора</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ЭКРАН: ПОИСК -->
+            <div class="workspace-area hidden" id="screen-search">
+                <div class="search-page">
+                    <div style="display:flex;align-items:center;"><button class="btn-mobile-back" onclick="document.body.classList.remove('mobile-main-active')">⬅️</button><h2 class="profile-title" style="margin:0;">🔍 Поиск пользователей</h2></div>
+                    <div class="search-card">
+                        <div class="search-bar-wrapper">
+                            <input type="text" id="search-input" class="search-input" placeholder="Введите ID пользователя или название (напр: #Abc12345)">
+                            <button id="search-btn" class="btn-search">Найти</button>
+                        </div>
+                        <div style="display:flex; gap:10px; margin-top:10px;">
+                            <button id="btn-create-channel" class="btn-primary" style="flex:1;">Создать Канал</button>
+                            <button id="btn-create-group" class="btn-primary" style="flex:1;">Создать Группу</button>
+                        </div>
+                        <div id="search-result" class="search-result hidden"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ЭКРАН: ПРОФИЛЬ -->
+            <div class="workspace-area hidden" id="screen-profile">
+                <div class="profile-page">
+                    <h2 class="profile-title">Мой профиль</h2>
+                    <div class="profile-card">
+                        <div class="profile-header">
+                            <div class="profile-avatar-wrapper" id="profile-avatar-btn" title="Нажмите чтобы сменить фото">
+                                <div class="profile-avatar" id="profile-avatar-display">?</div>
+                                <div class="profile-avatar-overlay"><span>📷</span></div>
+                            </div>
+                            <div class="profile-info">
+                                <div class="profile-nickname" id="profile-nickname-display">Никнейм</div>
+                                <div class="profile-id-row">
+                                    <span class="profile-id-label">Ваш ID:</span>
+                                    <span class="profile-id-value" id="profile-id-display">#--------</span>
+                                    <button class="btn-copy-id" id="btn-copy-id" title="Копировать ID">⧉</button>
+                                </div>
+                                <div class="profile-id-note">ID виден только вам</div>
+                            </div>
+                        </div>
+                        <div class="profile-status-row">
+                            <span class="pulse-green" id="profile-status-dot"></span>
+                            <span id="profile-status-text">Онлайн</span>
+                            <select id="profile-status-select" style="background: rgba(11, 14, 23, 0.8); border: 1px solid var(--border-color); color: var(--text-main); border-radius: 6px; padding: 2px 6px; font-size: 12px; cursor: pointer; margin-left: 8px; font-family: var(--font-family); outline: none;">
+                                <option value="online">Онлайн</option>
+                                <option value="offline">Оффлайн</option>
+                            </select>
+                        </div>
+                        <div class="input-group" style="margin-top: 15px;">
+                            <label for="profile-nickname-input">Никнейм</label>
+                            <input type="text" id="profile-nickname-input" placeholder="Никнейм" required>
+                        </div>
+                        <div class="input-group">
+                            <label for="profile-bio-input">Описание профиля</label>
+                            <textarea id="profile-bio-input" placeholder="Расскажите о себе..." rows="3" style="width: 100%; background-color: rgba(11, 14, 23, 0.6); border: 1px solid var(--border-color); border-radius: 12px; padding: 14px 16px; color: var(--text-main); font-size: 15px; outline: none; transition: all 0.25s ease; resize: none; font-family: var(--font-family);"></textarea>
+                        </div>
+                        <button id="btn-save-profile" class="btn-primary" style="margin-top: 10px;">Сохранить изменения</button>
+                        <button id="btn-logout" class="btn-primary" style="background: linear-gradient(135deg, var(--error-color), #d92641); color: #fff; margin-top: 5px; box-shadow: 0 0 15px rgba(255, 59, 92, 0.35);">Выйти из аккаунта</button>
+
+                        <!-- ===================== Админ меню ===================== -->
+                        <div id="admin-profile-menu" class="admin-profile-menu hidden">
+                            <h3 style="margin-top: 14px; border-left: 4px solid var(--primary); padding-left: 12px;">🛠️ Админ меню</h3>
+                            <div class="admin-profile-menu-row" style="display: flex; gap: 10px;">
+                                <button type="button" id="admin-go-to-news" class="btn-primary" style="flex:1; background: rgba(0, 255, 170, 0.12); border: 1px solid rgba(0, 255, 170, 0.35); color: #00ffaa; box-shadow: none;">
+                                    📰 Новости
+                                </button>
+                                <button type="button" id="admin-open-list" class="btn-primary" style="flex:1; background: rgba(255, 59, 92, 0.12); border: 1px solid rgba(255, 59, 92, 0.35); color: #ff3b5c; box-shadow: none;">
+                                    📄 Лист
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- ЭКРАН: НОВОСТИ -->
+            <div class="workspace-area hidden" id="screen-news">
+                <div class="profile-page" style="max-width: 680px;">
+                    <h2 class="profile-title">📰 Новости PrivaXion</h2>
+                    <div id="admin-news-container" class="hidden" style="margin-bottom: 20px; display: flex; gap: 10px;">
+                        <input type="text" id="admin-news-input" placeholder="Введите текст новости..." style="flex: 1; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); background: rgba(0,0,0,0.5); color: var(--text-main); font-family: var(--font-family);">
+                        <button id="admin-news-btn" class="btn-primary" style="padding: 10px 20px;">Опубликовать</button>
+                    </div>
+                    <div id="news-list" style="display:flex;flex-direction:column;gap:16px;">
+                        <div class="news-empty" id="news-empty">Нет новостей</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ЭКРАН: НАСТРОЙКИ -->
+            <div class="workspace-area hidden" id="screen-settings">
+                <div class="profile-page" style="max-width: 600px;">
+                    <h2 class="profile-title" data-i18n="settings_title">⚙️ Настройки</h2>
+
+                    <!-- Язык приложения -->
+                    <div class="profile-card" style="margin-bottom:20px;">
+                        <h3 data-i18n="settings_lang_title">🌍 Язык / Language</h3>
+                        <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 12px;" data-i18n="settings_lang_desc">Выберите язык интерфейса и авто-перевода сообщений.</p>
+                        <select id="app-language-select" style="width:100%; padding:12px; border-radius:10px; background:rgba(0,0,0,0.3); border:1px solid var(--border-color); color:var(--text-main);">
+                            <option value="ru">Русский (Russian)</option>
+                            <option value="pl">Polski (Polish)</option>
+                            <option value="de">Deutsch (German)</option>
+                        </select>
+                    </div>
+
+                    <!-- Активные сессии -->
+                    <div class="profile-card" style="margin-bottom:20px;">
+                        <h3>🛡️ Активные сессии</h3>
+                        <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 12px;">Список устройств, подключённых к вашему аккаунту.</p>
+                        <div id="sessions-list" style="display: flex; flex-direction: column; gap: 12px;"></div>
+                        <button id="btn-terminate-other-sessions" class="btn-primary" style="margin-top: 15px; background: rgba(255, 59, 92, 0.1); border: 1px solid var(--error-color); color: var(--error-color); box-shadow: none;">Завершить все другие сеансы</button>
+                    </div>
+
+                    <!-- ТЕМА -->
+                    <div class="profile-card" style="margin-bottom:20px;">
+                        <h3>🎨 Тема оформления</h3>
+                        <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 12px;">Выберите светлую или темную тему.</p>
+                        <select id="app-theme-select" style="width:100%; padding:12px; border-radius:10px; background:rgba(0,0,0,0.3); border:1px solid var(--border-color); color:var(--text-main);">
+                            <option value="dark">Темная тема (Dark)</option>
+                            <option value="light">Светлая тема (Light)</option>
+                        </select>
+                    </div>
+
+                    <!-- ЦЕНЗУРА МАТОВ -->
+                    <div class="profile-card">
+                        <h3>🔞 Цензура матов</h3>
+                        <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 12px;">
+                            Если вам меньше 18 — цензура включена всегда. Если 18+ — можно управлять переключателем.
+                        </p>
+
+                        <div class="censor-switch-row">
+                            <span class="censor-switch-label" id="censor-switch-label">Включена</span>
+                            <label class="switch">
+                                <input type="checkbox" id="censor-mats-toggle">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+                </div><!-- /.panel-body -->
+            </div><!-- /.main-panel -->
+        </main>
+    </div>
+
+    <!-- Скрытый input для аватара -->
+    <input type="file" id="avatar-file-input" accept="image/*" style="display:none">
+
+    <!-- Всплывающие уведомления (Toast) -->
+    <div id="toast-container" class="toast-container"></div>
+
+
+
+
+    <!-- Модальное окно блокировки при взломе -->
+    <div id="security-lockdown-modal" class="security-lockdown-modal hidden">
+        <div class="lockdown-content">
+            <div class="lockdown-icon">🔒</div>
+            <h1>Обнаружена подозрительная активность</h1>
+            <p>Ваш IP адрес был заблокирован из-за множественных попыток взлома.</p>
+            <div class="lockdown-info">
+                <p><strong>IP адрес:</strong> <span id="blocked-ip">...</span></p>
+                <p><strong>Причина:</strong> <span id="block-reason">Множественные попытки расшифровки</span></p>
+                <p><strong>Время блокировки:</strong> <span id="block-time">...</span></p>
+            </div>
+            <p class="lockdown-warning">⚠️ Ваш доступ заблокирован НАВСЕГДА. Обратитесь в поддержку PrivaXion.</p>
+            <div class="lockdown-buttons">
+                <a href="https://privaxion-support.example.com" class="btn-primary" target="_blank">Обратиться в поддержку</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- МОДАЛЬНОЕ ОКНО СОЗДАНИЯ КОМНАТЫ -->
+    <div id="create-room-modal" class="modal-overlay hidden">
+        <div class="modal-content auth-card">
+            <h2 id="create-room-title">Создать</h2>
+            <div class="input-group">
+                <label>Название</label>
+                <input type="text" id="create-room-name" placeholder="Введите название...">
+            </div>
+            <div class="input-group">
+                <label>Описание</label>
+                <input type="text" id="create-room-desc" placeholder="Введите описание...">
+            </div>
+            <div class="input-group">
+                <label>Логотип (URL)</label>
+                <input type="text" id="create-room-logo" placeholder="https://...">
+            </div>
+            <div class="input-group" id="create-room-access-group">
+                <label>Доступ (только для каналов)</label>
+                <select id="create-room-public" style="width:100%; padding:12px; border-radius:10px; background:rgba(0,0,0,0.3); border:1px solid var(--border-color); color:var(--text-main);">
+                    <option value="false">Приватный (только по ID)</option>
+                    <option value="true">Открытый (по названию)</option>
+                </select>
+            </div>
+            <div style="display:flex; gap:10px; margin-top:10px;">
+                <button id="btn-create-room-submit" class="btn-primary" style="flex:1;">Создать</button>
+                <button id="btn-create-room-cancel" class="btn-primary" style="flex:1; background:rgba(255,255,255,0.1);">Отмена</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- МОДАЛЬНОЕ ОКНО НАСТРОЕК КОМНАТЫ -->
+    <div id="room-settings-modal" class="modal-overlay hidden">
+        <div class="modal-content auth-card" style="max-height: 90vh; overflow-y: auto;">
+            <h2 id="room-settings-title">Настройки комнаты</h2>
+            <div class="input-group">
+                <label>Название</label>
+                <input type="text" id="room-settings-name">
+            </div>
+            <div class="input-group">
+                <label>Описание</label>
+                <input type="text" id="room-settings-desc">
+            </div>
+            <div class="input-group">
+                <label>Логотип (URL)</label>
+                <input type="text" id="room-settings-logo">
+            </div>
+            <div class="input-group" id="room-settings-access-group">
+                <label>Доступ</label>
+                <select id="room-settings-public" style="width:100%; padding:12px; border-radius:10px; background:rgba(0,0,0,0.3); border:1px solid var(--border-color); color:var(--text-main);">
+                    <option value="false">Приватный (только по ID)</option>
+                    <option value="true">Открытый (по названию)</option>
+                </select>
+            </div>
+            <div style="display:flex; gap:10px; margin-top:10px;">
+                <button id="btn-room-settings-save" class="btn-primary" style="flex:1;">Сохранить</button>
+                <button id="btn-room-settings-cancel" class="btn-primary" style="flex:1; background:rgba(255,255,255,0.1);">Закрыть</button>
+            </div>
+            
+            <hr style="border-color: var(--border-color); margin: 20px 0;">
+            <h3 style="color: var(--error-color);">Опасная зона</h3>
+            <p style="font-size: 12px; color: var(--text-muted); margin-bottom:10px;">Удаление комнаты навсегда.</p>
+            
+            <div class="captcha-wrapper" style="margin-bottom:10px;">
+                <div class="captcha-control">
+                    <canvas id="room-delete-captcha" width="150" height="50"></canvas>
+                    <button class="btn-refresh" id="btn-refresh-room-delete-captcha" title="Обновить капчу">↻</button>
+                </div>
+                <input type="text" id="room-delete-captcha-input" placeholder="Введите код с картинки" autocomplete="off">
+            </div>
+            
+            <div class="input-group">
+                <label>Ваш пароль</label>
+                <input type="password" id="room-delete-password" placeholder="Введите пароль...">
+            </div>
+
+            <button id="btn-room-delete" class="btn-primary" style="width:100%; margin-top:10px; background: linear-gradient(135deg, var(--error-color), #d92641); box-shadow: 0 0 15px rgba(255, 59, 92, 0.35);">Удалить комнату</button>
+        </div>
+    </div>
+
+    <!-- Криптография E2EE -->
+    <script src="https://cdn.jsdelivr.net/npm/tweetnacl@1.0.3/nacl.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tweetnacl-util@0.15.1/nacl-util.min.js"></script>
+    <script src="crypto.js"></script>
+
+    <script src="secure-db.js"></script>
+    <script src="app.js"></script>
+
+
+
+    <!-- ЭКРАН: ПАНЕЛЬ АДМИНИСТРАТОРА (Модальное окно) -->
+    <div id="admin-modal" class="modal hidden">
+        <div class="modal-content" style="max-width: 600px; width: 90%; background: var(--bg-color); border: 1px solid rgba(255,59,92,0.3);">
+            <h2 class="modal-title" style="color: #ff3b5c;">🛡️ Панель администратора</h2>
+            <div class="search-bar-wrapper" style="margin-bottom:10px;">
+                <input type="text" id="admin-search-input" class="search-input" placeholder="Поиск по ID или Нику">
+            </div>
+            <div style="display:flex; gap:10px; margin-bottom:15px;">
+                <button id="admin-sort-az" class="btn-primary" style="flex:1; padding: 10px; font-size: 12px;">Сорт: A-Z</button>
+                <button id="admin-sort-id" class="btn-primary" style="flex:1; padding: 10px; font-size: 12px;">Сорт: ID (0-1000)</button>
+            </div>
+            <div id="admin-users-list" style="max-height: 400px; overflow-y: auto; display:flex; flex-direction:column; gap:10px;"></div>
+            <button id="btn-admin-close" class="btn-primary" style="margin-top:20px; width:100%;">Закрыть</button>
+        </div>
+    </div>
+
+    <!-- Блокировка -->
+    <div id="admin-ban-modal" class="modal hidden" style="z-index: 9999999;">
+        <div class="modal-content" style="max-width: 400px; width: 90%;">
+            <h2 class="modal-title" style="color: #ff3b5c;">Заблокировать</h2>
+            <p id="ban-target-name" style="margin-bottom:10px; color:var(--text-muted);"></p>
+            <input type="text" id="ban-reason" class="modal-input" placeholder="Причина (напр. Спам)" style="margin-bottom:10px;">
+            <input type="text" id="ban-time" class="modal-input" placeholder="Время (напр. Навсегда или 30 дней)" style="margin-bottom:10px;">
+            <input type="text" id="ban-desc" class="modal-input" placeholder="Подробное описание" style="margin-bottom:10px;">
+            <button id="btn-ban-submit" class="btn-primary" style="margin-top:10px; width:100%; border-color: #ff3b5c; color: #ff3b5c;">Ударить банхаммером</button>
+            <button id="btn-ban-cancel" class="btn-primary" style="margin-top:10px; width:100%;">Отмена</button>
+        </div>
+    </div>
+</body>
+</html>
+

@@ -1,0 +1,3 @@
+- ✅ index.html: добавлен счётчик в шапку чата (chat-room-counter)
+- ⏳ style.css: оформить визуально счётчик (chat-room-counter-wrap / chat-room-counter)
+- ⏳ app.js: реализовать обновление (current/max) при openChat/openRoom и обновлять при смене комнат

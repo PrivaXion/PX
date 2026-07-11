@@ -1,0 +1,54 @@
+/* 
+ * PrivaXion - CSS/SVG фильтр "Анти-Нейросеть"
+ * 
+ * Архитектура:
+ * Комбинация невидимого SVG-фильтра (feTurbulence/feDisplacementMap) и CSS.
+ * Для человеческого глаза искажения минимальны и сглаживаются мозгом, 
+ * но ломают алгоритмы выделения контуров (edge detection) у OCR и ИИ систем 
+ * (например, Windows Recall).
+ */
+
+/* 1. Скрытый SVG фильтр должен быть добавлен в HTML (в самом начале <body>):
+<svg width="0" height="0" style="position:absolute;z-index:-1;">
+    <filter id="anti-ocr-noise">
+        <!-- Генерируем высокочастотный микро-шум -->
+        <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="3" result="noise" />
+        <!-- Смещаем пиксели текста на основе шума. Для глаза 1px незаметен, для OCR - критично -->
+        <feDisplacementMap in="SourceGraphic" in2="noise" scale="1.5" xChannelSelector="R" yChannelSelector="G" />
+    </filter>
+</svg>
+*/
+
+/* 2. Применение класса к текстовым сообщениям */
+.anti-ocr-text {
+    /* Применение SVG искажения */
+    filter: url(#anti-ocr-noise);
+    
+    /* Небольшой сдвиг прозрачности букв, сливающийся для глаза */
+    text-shadow: 0.5px 0.5px 0px rgba(0, 0, 0, 0.1), -0.5px -0.5px 0px rgba(255, 255, 255, 0.05);
+    
+    /* Микроскопический наклон шрифта, который ломает baseline (опорную линию) OCR-сканера */
+    transform: skewX(-0.5deg) skewY(0.2deg);
+    display: inline-block;
+    
+    /* Запрет системного выделения (защита от простого копирования) */
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+/* 
+ * Дополнительный слой защиты: инъекция фантомных символов.
+ * OCR прочтет их, а пользователь не увидит из-за font-size: 0
+ */
+.anti-ocr-text::before {
+    content: "¶®§";
+    font-size: 0;
+    opacity: 0;
+    position: absolute;
+}
+.anti-ocr-text::after {
+    content: "©∆";
+    font-size: 0;
+    opacity: 0;
+    position: absolute;
+}

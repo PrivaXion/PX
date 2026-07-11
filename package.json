@@ -1,0 +1,91 @@
+{
+  "name": "privaxion",
+  "version": "1.0.0",
+  "main": "electron/main.js",
+  "description": "PrivaXion GLOBAL — самый безопасный мессенджер",
+  "author": "WT STUDIO",
+  "license": "ISC",
+  "scripts": {
+    "test": "playwright test",
+    "start": "node one-port-server.js",
+    "api": "json-server --watch db.json --host 0.0.0.0 --port 8081",
+    "dev": "concurrently \"npm run api\" \"npm start\"",
+    "run-all": "concurrently --kill-others-on-fail \"npm run api\" \"npm run start\"",
+    "electron:dev": "concurrently \"npm run api\" \"npm start\" \"electron .\"",
+    "electron:build": "electron-builder build --win portable",
+    "apk:sync": "robocopy . www index.html app.js style.css api.js logo.png XXD.jpg XDDD.jpg /NFL /NDL /NJH & npx cap sync android",
+    "apk:build": "npm run apk:sync && powershell -Command \"$env:JAVA_HOME='C:\\Program Files\\Android\\Android Studio\\jbr'; cd android; .\\gradlew assembleDebug\""
+  },
+  "build": {
+    "appId": "com.wtstudio.privaxion",
+    "productName": "PrivaXion",
+    "copyright": "© 2026 WT STUDIO",
+    "win": {
+      "target": [
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "logo.png"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "installerIcon": "logo.png",
+      "uninstallerIcon": "logo.png",
+      "shortcutName": "PrivaXion"
+    },
+    "files": [
+      "electron/**/*",
+      "index.html",
+      "app.js",
+      "style.css",
+      "api.js",
+      "one-port-server.js",
+      "signal-server.js",
+      "db.json",
+      "logo.png",
+      "XXD.jpg",
+      "XDDD.jpg",
+      "Zvonok.mp3",
+      "Yvedpmlenie.mp3",
+      "node_modules/**/*",
+      "package.json"
+    ],
+    "asar": false,
+    "extraResources": [],
+    "directories": {
+      "output": "dist"
+    }
+  },
+  "keywords": [],
+  "devDependencies": {
+    "@playwright/test": "^1.61.0",
+    "concurrently": "^9.2.1",
+    "electron": "^35.0.0",
+    "electron-builder": "^26.0.0",
+    "json-server": "^0.17.4",
+    "playwright": "^1.61.0"
+  },
+  "dependencies": {
+    "@capacitor-community/privacy-screen": "^8.0.0",
+    "@capacitor-community/sqlite": "^8.1.0",
+    "@capacitor/android": "^8.4.1",
+    "@capacitor/cli": "^7.6.7",
+    "@capacitor/core": "^8.4.1",
+    "capacitor-secure-storage-plugin": "^0.13.0",
+    "express": "^5.2.1",
+    "multer": "^2.1.1",
+    "tweetnacl": "^1.0.3",
+    "tweetnacl-util": "^0.15.1"
+  }
+}

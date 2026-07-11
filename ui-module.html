@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>PrivaXion</title>
+    <link rel="stylesheet" href="ui-module.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <!-- Splash Screen -->
+    <div id="splash-screen">
+        <div class="shield-container">
+            <div class="shield-icon"></div>
+            <!-- Particles for the hit effect -->
+            <div class="particle p1"></div>
+            <div class="particle p2"></div>
+            <div class="particle p3"></div>
+            <div class="particle p4"></div>
+            <div class="particle p5"></div>
+            <div class="particle p6"></div>
+            <div class="particle p7"></div>
+            <div class="particle p8"></div>
+        </div>
+    </div>
+
+    <!-- Main App Container -->
+    <div id="app-container">
+        
+        <!-- Header -->
+        <header>
+            <div class="header-left">
+                <span class="logo" data-i18n="app_title">PrivaXion</span>
+            </div>
+            <div class="header-right">
+                <button id="settings-btn" class="icon-btn" aria-label="Settings">⚙️</button>
+            </div>
+        </header>
+
+        <!-- Chat Area -->
+        <main class="chat-area">
+            <div class="message incoming">
+                <div class="bubble" data-i18n="welcome_msg">Welcome to PrivaXion! This is a secure messenger.</div>
+                <span class="time">10:00 AM</span>
+            </div>
+            <div class="message outgoing">
+                <div class="bubble" data-i18n="hello_msg">Hello! Testing the UI.</div>
+                <span class="time">10:01 AM</span>
+            </div>
+        </main>
+
+        <!-- Input Area -->
+        <footer>
+            <div class="input-container">
+                <input type="text" id="message-input" data-i18n-placeholder="type_message" placeholder="Type a message...">
+                <button id="send-btn" class="send-btn" data-i18n="send">Send</button>
+            </div>
+        </footer>
+
+        <!-- Settings Modal -->
+        <div id="settings-modal" class="modal-overlay hidden">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 data-i18n="settings">Settings</h2>
+                    <button id="close-settings" class="close-btn">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="setting-item">
+                        <label for="language-select" data-i18n="language">Language</label>
+                        <select id="language-select">
+                            <option value="en">English (EN)</option>
+                            <option value="ru">Русский (RU)</option>
+                            <option value="pl">Polski (PL)</option>
+                            <option value="uk">Українська (UK)</option>
+                            <option value="de">Deutsch (DE)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="ui-module.js"></script>
+</body>
+</html>

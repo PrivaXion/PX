@@ -1,0 +1,14 @@
+{
+  "adminUser": "WorldSviat",
+  "role": "supreme_admin",
+  "secretToken": "SUPER_SECRET_ENVIRONMENT_OR_VAULT_TOKEN_CHANGE_ME",
+  "permissions": [
+    "nuclear_wipe_media",
+    "global_broadcast"
+  ],
+  "security": {
+    "require2FA": true,
+    "ipWhitelist": ["127.0.0.1"]
+  },
+  "description": "Специфический ДЕЙСТВУЮЩИЙ JSON-файл для админ-аккаунта WorldSviat. Позволяет выполнить Ядерное удаление медиа-сервера."
+}
