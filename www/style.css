@@ -3510,30 +3510,3 @@ body.light-theme .agreement-box { background: rgba(0,0,0,0.02); }
 
 /* FINAL VALID CSS NUDGE */
 .px__final_valid_nudge { display: none; }
-/* Attach Button */
-.btn-attach {
-    background: transparent;
-    border: none;
-    color: var(--text-muted);
-    font-size: 20px;
-    cursor: pointer;
-    margin-right: 10px;
-    transition: color 0.3s;
-}
-.btn-attach:hover {
-    color: var(--primary);
-}
-
-/* Word Fly-in Animation */
-.word-fly {
-    display: inline-block;
-    opacity: 0;
-    transform: translateY(10px);
-    animation: flyInWord 0.5s forwards ease-out;
-}
-@keyframes flyInWord {
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
