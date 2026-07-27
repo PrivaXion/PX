@@ -1,4 +1,4 @@
-й<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -13,7 +13,7 @@
 </head>
 <body>
     <!-- ВОДЯНОЙ ЗНАК -->
-    <div id="main-watermark" style="position: fixed; top: 10px; left: 0; width: 100%; text-align: center; z-index: 999999; opacity: 0.35; color: var(--text-muted); font-size: 11px; pointer-events: none; font-weight: 500; letter-spacing: 1.5px; text-transform: uppercase;">
+    <div id="main-watermark" style="position: fixed; bottom: 10px; left: 0; width: 100%; text-align: center; z-index: 999999; opacity: 0.35; color: var(--text-muted); font-size: 11px; pointer-events: none; font-weight: 500; letter-spacing: 1.5px; text-transform: uppercase;">
         by WT STUDIO powered by MinBelPower
     </div>
 
@@ -41,15 +41,18 @@
 
         <!-- ВХОД -->
         <div id="login-card" class="auth-card">
-            <h2>Вход в аккаунт</h2>
+            <h2>🔐 Вход в аккаунт</h2>
+            <p style="font-size:13px;color:var(--text-muted);margin-bottom:16px;text-align:center;">
+                Для входа прикрепите ваш файл-ключ<br>
+                <code style="font-size:11px;opacity:0.6;">privaxion_key_&lt;username&gt;.json</code>
+            </p>
             <form id="login-form" autocomplete="off">
                 <div class="input-group">
-                    <label for="login-username">Никнейм</label>
-                    <input type="text" id="login-username" placeholder="Введите никнейм" required>
-                </div>
-                <div class="input-group">
-                    <label for="login-password">Пароль</label>
-                    <input type="password" id="login-password" placeholder="Введите пароль" required>
+                    <label for="login-keyfile">📎 Файл-ключ (.json)</label>
+                    <label for="login-keyfile-input" class="btn-primary" style="display:flex;align-items:center;justify-content:center;gap:10px;cursor:pointer;padding:14px;">
+                        <span id="login-file-label">Выбрать файл-ключ...</span>
+                    </label>
+                    <input type="file" id="login-keyfile-input" accept=".json" style="display:none;">
                 </div>
                 <div class="captcha-wrapper">
                     <label>Проверка на робота</label>
@@ -60,7 +63,7 @@
                     <input type="text" id="login-captcha-input" placeholder="Введите текст с картинки" required>
                 </div>
                 <div id="login-error" class="error-message"></div>
-                <button type="submit" class="btn-primary">Войти</button>
+                <button type="submit" class="btn-primary" style="margin-top:8px;">Войти</button>
             </form>
             <div class="auth-switch">
                 <span>Нет аккаунта?</span>
@@ -99,7 +102,29 @@
                     <input type="text" id="register-captcha-input" placeholder="Введите текст с картинки" required>
                 </div>
                 <div id="register-error" class="error-message"></div>
-                <button type="submit" class="btn-primary">Создать аккаунт</button>
+                <!-- ПОЛЬЗОВАТЕЛЬСКОЕ СОГЛАШЕНИЕ -->
+                <div class="profile-card" style="margin-bottom:12px;padding:12px;font-size:12px;">
+                    <details>
+                        <summary style="cursor:pointer;font-weight:600;margin-bottom:8px;">📄 Пользовательское соглашение (обязательно прочитать)</summary>
+                        <ol style="margin:10px 0 0 16px;line-height:1.8;color:var(--text-muted);">
+                            <li>Запрещён <strong>свaттинг</strong> — ложные вызовы экстренных служб (полиции, скорой, пожарной).</li>
+                            <li>Запрещён <strong>доксинг</strong> — публикация личных данных других людей без их согласия.</li>
+                            <li>Запрещено <strong>мошенничество (скам)</strong> — обман пользователей с целью наживы.</li>
+                            <li>Запрещено распространение <strong>спама</strong> — нежелательных рекламных и навязчивых сообщений.</li>
+                            <li>Запрещено распространение <strong>вредоносного ПО</strong> — вирусов, троянов, шпионских программ.</li>
+                            <li>Запрещено <strong>разжигание ненависти</strong> — дискриминация по расе, полу, религии, национальности.</li>
+                            <li>Запрещены <strong>продажа и пропаганда</strong> наркотиков и других запрещённых веществ.</li>
+                            <li>Запрещено <strong>создание и распространение CSAM</strong> — любого контента сексуального характера с несовершеннолетними.</li>
+                            <li><strong>Мессенджер PrivaXion не несёт ответственности</strong> за действия своих пользователей. Нарушители будут переданы в правоохранительные органы.</li>
+                            <li>Нарушение любого из вышеперечисленных пунктов влечёт за собой <strong>немедленную и бессрочную блокировку аккаунта</strong>.</li>
+                        </ol>
+                    </details>
+                    <div style="display:flex;align-items:center;gap:10px;margin-top:12px;">
+                        <input type="checkbox" id="terms-accept" style="width:18px;height:18px;accent-color:var(--primary);cursor:pointer;">
+                        <label for="terms-accept" style="cursor:pointer;">Я прочитал(а) и принимаю условия пользовательского соглашения</label>
+                    </div>
+                </div>
+                <button type="submit" class="btn-primary" id="btn-register-submit">Создать аккаунт</button>
             </form>
             <div class="auth-switch">
                 <span>Есть аккаунт?</span>
@@ -179,6 +204,7 @@
                         <button class="btn-reply-cancel" id="btn-cancel-reply">✕</button>
                     </div>
                     <div class="chat-input-area">
+                        <button id="chat-attach-btn" class="btn-attach" title="Прикрепить файл (до 3 ГБ)">📎</button>
                         <input type="text" id="chat-message-input" class="chat-input" placeholder="Напишите сообщение...">
                         <button id="chat-send-btn" class="btn-send">➤</button>
                     </div>
@@ -187,28 +213,38 @@
 
             <!-- ЭКРАН: ЗВОНОК (fullscreen UI) -->
             <div class="workspace-area hidden" id="screen-call">
-                <div class="call-screen">
-                    <div class="call-top">
-                        <div class="call-title-row">
-                            <div class="call-title">Звонок</div>
-                            <div class="call-peer" id="call-peer-label">...</div>
-                        </div>
-                        <div class="call-status" id="call-status-text">ожидание…</div>
+                <div class="call-screen" style="align-items: center; justify-content: center; text-align: center;">
+                    <!-- Индикатор шифрования -->
+                    <div style="display: inline-block; background: rgba(0, 255, 170, 0.15); color: #00ffaa; font-size: 11px; padding: 4px 10px; border-radius: 20px; font-weight: bold; letter-spacing: 0.5px; margin-bottom: 25px; border: 1px solid rgba(0, 255, 170, 0.3);">
+                        🔒 ЗАШИФРОВАНО (DTLS-SRTP)
                     </div>
 
-                    <div class="call-middle">
-                        <div class="call-avatar" id="call-avatar">👤</div>
-                        <div class="call-small" id="call-small-text">Mic & audio</div>
+                    <div class="call-avatar" style="width: 120px; height: 120px; border-radius: 50%; background: linear-gradient(135deg, rgba(176, 38, 255, 0.35), rgba(0, 255, 170, 0.25)); margin: 0 auto 20px; display: flex; align-items: center; justify-content: center; font-size: 50px; box-shadow: 0 0 30px rgba(0,255,170,0.1);">
+                        👤
                     </div>
+                    
+                    <h2 id="call-peer-label" style="margin-bottom: 10px; font-size: 24px;">...</h2>
+                    <p id="call-status-text" style="color: var(--text-muted); font-size: 15px; margin-bottom: 10px;">ожидание...</p>
+                    <p id="call-timer" style="font-size: 20px; font-family: monospace; font-weight: bold; display: none; color: #fff; margin-bottom: 10px;">00:00</p>
+                    
+                    <div style="margin-top: 40px; display: flex; justify-content: center; gap: 20px;">
+                        <button id="btn-mic-off-call" class="btn-primary" style="background: #333; border: 1px solid #555; width: 64px; height: 64px; border-radius: 50%; font-size: 24px; padding: 0;">🎙️</button>
+                        <button id="btn-hangup-call" class="btn-primary" style="background: var(--error-color); border: none; width: 64px; height: 64px; border-radius: 50%; font-size: 28px; padding: 0; display: flex; align-items: center; justify-content: center;">☎️</button>
+                    </div>
+                </div>
+            </div>
 
-                    <div class="call-bottom">
-                        <div class="call-controls">
-                            <button id="btn-hangup-call" class="btn-primary call-btn call-btn-hangup">⛔ Отбой</button>
-                            <button id="btn-mic-off-call" class="btn-primary call-btn call-btn-mic">🎙️ Микрофон ВКЛ</button>
-                        </div>
-                        <div class="call-hint">
-                            Если не слышно — проверь разрешение микрофона в браузере.
-                        </div>
+            <!-- ВХОДЯЩИЙ ЗВОНОК (модалка) -->
+            <div id="incoming-call-modal" class="modal hidden" style="z-index: 999999;">
+                <div class="modal-content" style="text-align: center; max-width: 320px;">
+                    <div style="font-size: 50px; margin-bottom: 10px; animation: pulse 1.5s infinite;">📱</div>
+                    <h2 style="margin-bottom: 5px;">Входящий звонок</h2>
+                    <p id="incoming-caller-name" style="font-size: 18px; font-weight: bold; color: var(--primary);">User_ID</p>
+                    <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px;">Голосовой вызов (P2P)</p>
+                    
+                    <div style="display: flex; gap: 15px; justify-content: center;">
+                        <button id="btn-decline-call" class="btn-primary" style="background: var(--error-color); border: none; width: 120px;">Отклонить</button>
+                        <button id="btn-accept-call" class="btn-primary" style="background: #00ffaa; color: #000; border: none; width: 120px;">Принять</button>
                     </div>
                 </div>
             </div>
@@ -301,9 +337,12 @@
                         <!-- ===================== Админ меню ===================== -->
                         <div id="admin-profile-menu" class="admin-profile-menu hidden">
                             <h3 style="margin-top: 14px; border-left: 4px solid var(--primary); padding-left: 12px;">🛠️ Админ меню</h3>
-                            <div class="admin-profile-menu-row">
-                                <button type="button" id="admin-go-to-news" class="btn-primary" style="background: rgba(0, 255, 170, 0.12); border: 1px solid rgba(0, 255, 170, 0.35); color: #00ffaa; box-shadow: none;">
-                                    📰 Новости (для #000000)
+                            <div class="admin-profile-menu-row" style="display: flex; gap: 10px;">
+                                <button type="button" id="admin-go-to-news" class="btn-primary" style="flex:1; background: rgba(0, 255, 170, 0.12); border: 1px solid rgba(0, 255, 170, 0.35); color: #00ffaa; box-shadow: none;">
+                                    📰 Новости
+                                </button>
+                                <button type="button" id="admin-open-list" class="btn-primary" style="flex:1; background: rgba(255, 59, 92, 0.12); border: 1px solid rgba(255, 59, 92, 0.35); color: #ff3b5c; box-shadow: none;">
+                                    📄 Лист
                                 </button>
                             </div>
                         </div>
@@ -348,6 +387,16 @@
                         <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 12px;">Список устройств, подключённых к вашему аккаунту.</p>
                         <div id="sessions-list" style="display: flex; flex-direction: column; gap: 12px;"></div>
                         <button id="btn-terminate-other-sessions" class="btn-primary" style="margin-top: 15px; background: rgba(255, 59, 92, 0.1); border: 1px solid var(--error-color); color: var(--error-color); box-shadow: none;">Завершить все другие сеансы</button>
+                    </div>
+
+                    <!-- ТЕМА -->
+                    <div class="profile-card" style="margin-bottom:20px;">
+                        <h3>🎨 Тема оформления</h3>
+                        <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 12px;">Выберите светлую или темную тему.</p>
+                        <select id="app-theme-select" style="width:100%; padding:12px; border-radius:10px; background:rgba(0,0,0,0.3); border:1px solid var(--border-color); color:var(--text-main);">
+                            <option value="dark">Темная тема (Dark)</option>
+                            <option value="light">Светлая тема (Light)</option>
+                        </select>
                     </div>
 
                     <!-- ЦЕНЗУРА МАТОВ -->
@@ -478,34 +527,15 @@
         </div>
     </div>
 
+    <!-- Криптография E2EE -->
+    <script src="https://cdn.jsdelivr.net/npm/tweetnacl@1.0.3/nacl.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tweetnacl-util@0.15.1/nacl-util.min.js"></script>
+    <script src="crypto.js"></script>
+
+    <script src="secure-db.js"></script>
     <script src="app.js"></script>
 
-    <!-- Присутствие/авторские права/регистрация -->
-    <div id="copyright-table" aria-hidden="true">
-        <div class="copyright-card">
-            <table>
-                <thead>
-                    <tr>
-                        <th colspan="2">Авторские права / Registration</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>США</td>
-                        <td>© PrivaXion GLOBAL. Зарегистрировано: 07.06.26 15:28</td>
-                    </tr>
-                    <tr>
-                        <td>СНГ</td>
-                        <td>© PrivaXion GLOBAL. Зарегистрировано: 07.06.26 15:28</td>
-                    </tr>
-                    <tr>
-                        <td>ЕС</td>
-                        <td>© PrivaXion GLOBAL. Зарегистрировано: 07.06.26 15:28</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
+
 
     <!-- ЭКРАН: ПАНЕЛЬ АДМИНИСТРАТОРА (Модальное окно) -->
     <div id="admin-modal" class="modal hidden">

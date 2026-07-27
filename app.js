@@ -1664,8 +1664,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function getCallRoomId(userA, userB) {
         const sorted = [userA.toLowerCase(), userB.toLowerCase()].sort();
-        return 
-oom__;
+        return `room_${sorted[0]}_${sorted[1]}`;
     }
 
     let callRoomId = null;
@@ -1741,7 +1740,7 @@ oom__;
 
     function publishSignal(signalType, payload, toClient = null) {
         if (!callRoomId) return Promise.resolve();
-        return fetch(${SIGNAL_SERVER_BASE}/signal?roomId=, {
+        return fetch(`${SIGNAL_SERVER_BASE}/signal?roomId=${encodeURIComponent(callRoomId)}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -1834,7 +1833,7 @@ oom__;
             callSeconds++;
             const m = Math.floor(callSeconds / 60).toString().padStart(2, '0');
             const s = (callSeconds % 60).toString().padStart(2, '0');
-            if (timerEl) timerEl.textContent = ${m}:;
+            if (timerEl) timerEl.textContent = `${m}:${s}`;
         }, 1000);
     }
 
@@ -1964,9 +1963,8 @@ oom__;
         }
 
         callEventSource = new EventSource(
-            ${SIGNAL_SERVER_BASE}/events?roomId=&clientId=
+            `${SIGNAL_SERVER_BASE}/events?roomId=${encodeURIComponent(callRoomId)}&clientId=${encodeURIComponent(clientId)}`
         );
-
         callEventSource.addEventListener('signal', (ev) => {
             try {
                 const data = JSON.parse(ev.data);
@@ -2793,19 +2791,19 @@ oom__;
             
             div.innerHTML = `
                 <div style="display:flex; width:100%; align-items:center; margin-bottom:10px;">
-                    <div class="search-user-avatar" style="width:40px;height:40px;font-size:16px;">${u.avatar ? \`<img src="\${u.avatar}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">\` : '?'}</div>
+                    <div class="search-user-avatar" style="width:40px;height:40px;font-size:16px;">${u.avatar ? '<img src="' + u.avatar + '" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">' : '?'}</div>
                     <div class="search-user-info" style="margin-left:10px;">
-                        <div class="search-user-nickname">\${escapeHtml(u.username)}</div>
-                        <div class="search-user-id">\${u.id} \${u.isBanned ? '<span style="color:#ff3b5c;font-size:12px;">(ЗАБАНЕН)</span>' : ''}</div>
+                        <div class="search-user-nickname">${escapeHtml(u.username)}</div>
+                        <div class="search-user-id">${u.id} ${u.isBanned ? '<span style="color:#ff3b5c;font-size:12px;">(ЗАБАНЕН)</span>' : ''}</div>
                     </div>
                 </div>
                 <div style="display:flex; flex-wrap:wrap; gap:5px; width:100%;">
-                    <button class="btn-primary" style="flex:1; padding:8px; font-size:11px; \${u.isBanned ? 'border-color:#ff3b5c;' : ''}" id="adm-ban-\${u.id.replace('#','')}">\${u.isBanned ? 'Разбанить' : 'Заблокировать'}</button>
+                    <button class="btn-primary" style="flex:1; padding:8px; font-size:11px; ${u.isBanned ? 'border-color:#ff3b5c;' : ''}" id="adm-ban-${u.id.replace('#','')}">${u.isBanned ? 'Разбанить' : 'Заблокировать'}</button>
                 </div>
             `;
             adminList.appendChild(div);
             
-            document.getElementById(\`adm-ban-\${u.id.replace('#','')}\`).onclick = async () => {
+            document.getElementById(`adm-ban-${u.id.replace('#','')}`).onclick = async () => {
                 if (u.isBanned) {
                     u.isBanned = false;
                     u.banReason = '';
@@ -2815,7 +2813,7 @@ oom__;
                 } else {
                     currentBanTarget = u;
                     const targetName = document.getElementById('ban-target-name');
-                    if(targetName) targetName.textContent = \`Пользователь: \${u.username} (\${u.id})\`;
+                    if(targetName) targetName.textContent = `Пользователь: ${u.username} (${u.id})`;
                     const reason = document.getElementById('ban-reason');
                     if(reason) reason.value = '';
                     const time = document.getElementById('ban-time');
